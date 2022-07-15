@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import CurrentWeather from "../components/CurrentWeather";
+import NavBar from "../components/NavBar";
 import Search from "../components/Search";
 import { ApiResponse } from "../interfaces/api";
 
@@ -40,13 +41,14 @@ function Home() {
 
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(({ coords }) => {
+      navigator.geolocation.watchPosition(({ coords }) => {
         setCoords({ ...coords, lat: coords.latitude, lon: coords.longitude });
       });
     }
   }, []);
 
   const handleClick = () => {
+    setLoading(true);
     const currentWeatherFetch = fetch(
       `${weatherUrl}/weather?lat=${coords?.lat}&lon=${coords?.lon}&appid=${weatherApiKey}&units=metric`
     );
@@ -64,31 +66,48 @@ function Home() {
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   };
-
+  console.log(currentWeather);
   return (
-    <div className="pt-5 px-10 flex flex-col items-center gap-20">
-      <header className="flex items-center gap-5 justify-center">
-        <Search onSearchChange={handleSearchChange} />
-        <button
-          className="p-3 bg-purple-700 text-white rounded"
-          onClick={handleClick}
-        >
-          get my location
-        </button>
-        <Link to={"favorite"} className="p-3 bg-orange-700 text-white rounded">
-          Favoritos
-        </Link>
-      </header>
-      <main>
-        {loading ? (
-          <h1>Loading ...</h1>
-        ) : (
-          currentWeather && (
-            <CurrentWeather data={currentWeather}/>
-          )
-        )}
-      </main>
-      <ToastContainer autoClose={3000} />
+    <div>
+      <NavBar />
+      <div className="pt-5 px-10 flex flex-col items-center gap-20">
+        <header className="flex items-center gap-5 justify-center">
+          <Search onSearchChange={handleSearchChange} />
+          <button
+            className="p-3 bg-purple-700 text-white rounded"
+            onClick={handleClick}
+          >
+            Minha Localização
+          </button>
+          <Link
+            to={"favorite"}
+            className="p-3 bg-orange-700 text-white rounded"
+          >
+            Favoritos
+          </Link>
+        </header>
+        <main>
+          {currentWeather ? (
+            <CurrentWeather data={currentWeather} loading={loading} />
+          ) : (
+            <div
+              className="
+          flex
+          flex-col
+          items-center
+          justify-center
+          mt-40
+          "
+            >
+              <strong className="text-4xl">Sem Dados para Mostrar</strong>
+              <span className="text-md text-orange-500">
+                Por favor, pesquisa por um lugar
+              </span>
+            </div>
+          )}
+        </main>
+        <ToastContainer autoClose={3000} />
+      </div>
     </div>
   );
 }

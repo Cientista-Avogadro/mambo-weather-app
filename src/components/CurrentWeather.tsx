@@ -1,7 +1,14 @@
 import { toast } from "react-toastify";
 import { ApiResponse, CurrentWeatherProps } from "../interfaces/api";
+import SpinnerLoading from "./SpinnerLoading";
 
-function CurrentWeather({ data, isFavorite }: CurrentWeatherProps) {
+function CurrentWeather({ data, isFavorite, loading }: CurrentWeatherProps) {
+
+  if(loading){
+    return <SpinnerLoading />
+  }
+  
+
   const handleClick = (data: ApiResponse) => {
     let load: ApiResponse[] =[];
     load =JSON.parse(localStorage.getItem("favorite") || "");
@@ -26,9 +33,9 @@ function CurrentWeather({ data, isFavorite }: CurrentWeatherProps) {
     });
   };
 
-  const handleRemove = (data: any) => {
+  const handleRemove = (data: ApiResponse) => {
     const load = JSON.parse(localStorage.getItem("favorite") || "");
-    const res = load.filter((item: any) => item.name !== data.name && item);
+    const res = load.filter((item: ApiResponse) => item.name !== data.name && item);
     localStorage.setItem("favorite", JSON.stringify(res));
     location.reload();
     toast("removido dos favoritos, da um refresh", {
@@ -41,7 +48,7 @@ function CurrentWeather({ data, isFavorite }: CurrentWeatherProps) {
 
   return (
     <div className="bg-gray-900 flex flex-col gap-3 p-5 rounded text-white">
-      <header className="flex items-center justify-between gap-8 flex-wrap">
+      <header className="flex items-center justify-between gap-10 flex-wrap">
         <div className="flex flex-col justify-center gap-2">
           <strong className="text-4xl">{data.city || data.name}</strong>
           <span className="text-sm text-gray-200">
@@ -81,22 +88,22 @@ function CurrentWeather({ data, isFavorite }: CurrentWeatherProps) {
           </div>
         </div>
         <div className="">
-          <span className="text-3xl pb-[10px] block">Details</span>
+          <span className="text-3xl pb-[10px] block">Detalhes</span>
           <div className="flex justify-between gap-2">
             <span className="">Feels Like:</span>
-            <span className="">22</span>
+            <span className="">{Math.round(data.main.feels_like)}</span>
           </div>
           <div className="flex justify-between gap-2">
-            <span className="">Wind:</span>
-            <span className="">2 m/s</span>
+            <span className="">Vento:</span>
+            <span className="">{data.wind.speed} m/s</span>
           </div>
           <div className="flex justify-between gap-2">
-            <span className="">Humidity:</span>
-            <span className="">15%</span>
+            <span className="">Humidade:</span>
+            <span className="">{data.main.humidity}%</span>
           </div>
           <div className="flex justify-between gap-2">
-            <span className="">Pressure:</span>
-            <span className="">22 hPa</span>
+            <span className="">Pressão:</span>
+            <span className="">{data.main.pressure} hPa</span>
           </div>
         </div>
       </main>
