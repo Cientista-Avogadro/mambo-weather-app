@@ -45,7 +45,11 @@ export interface ApiResponse {
 
 
 export interface CurrentWeatherProps{
-  data:ApiResponse
   isFavorite?:boolean
+  data: ApiResponse
+}
+
+export interface ForecastherProps{
+  data:ApiResponse
   loading?:boolean
 }

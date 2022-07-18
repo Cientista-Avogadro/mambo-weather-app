@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
-import { changeResultProps, CityResponse } from "../interfaces/search";
+import { changeResultProps } from "../interfaces/search";
 import api from "../services/api";
 
 function Search({ onSearchChange }: any) {
@@ -11,27 +11,27 @@ function Search({ onSearchChange }: any) {
     onSearchChange(searchDate);
   };
 
-  const loadOptions: any = (inputValue: string) => {
-    return api
-      .get(`?addressdetails=1&q=${inputValue}&format=json&limit=4`)
-      .then((res: CityResponse) => {
-        return {
-          options: res.data.map((item) => {
-            return {
-              value: `${item?.lat} ${item?.lon}`,
-              label: `${
-                item?.address?.city || item?.address?.state
-              }, ${item?.address?.country_code.toUpperCase()}`,
-            };
-          }),
-        };
-      })
-      .then((res) => res)
-      .catch((err) => console.log(err));
+  const loadOptions: any = async (inputValue: string) => {
+    try {
+      const res = await api
+        .get(`?addressdetails=1&q=${inputValue}&format=json&limit=5`);
+      const res_1 = {
+        options: res.data.map((item:any) => {
+          
+          return {
+            value: `${item?.lat} ${item?.lon}`,
+            label: `${item?.display_name ||item?.address?.city || item?.address?.state}, ${item?.address?.country_code.toUpperCase()}`,
+          };
+        }),
+      };
+      return res_1;
+    } catch (err) {
+      return console.log(err);
+    }
   };
   return (
     <AsyncPaginate
-      placeholder="search for the city"
+      placeholder="Pesquise aqui a sua Cidade"
       value={search}
       onChange={handleChange}
       loadOptions={loadOptions}
