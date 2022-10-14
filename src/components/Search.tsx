@@ -13,14 +13,16 @@ function Search({ onSearchChange }: any) {
 
   const loadOptions: any = async (inputValue: string) => {
     try {
-      const res = await api
-        .get(`?addressdetails=1&q=${inputValue}&format=json&limit=5`);
+      const res = await api.get(
+        `?addressdetails=1&q=${inputValue}&format=json&limit=5`
+      );
       const res_1 = {
-        options: res.data.map((item:any) => {
-          
+        options: res.data.map((item: any) => {
           return {
             value: `${item?.lat} ${item?.lon}`,
-            label: `${item?.display_name ||item?.address?.city || item?.address?.state}, ${item?.address?.country_code.toUpperCase()}`,
+            label: `${
+              item?.display_name || item?.address?.city || item?.address?.state
+            }, ${item?.address?.country_code.toUpperCase()}`,
           };
         }),
       };
@@ -35,7 +37,7 @@ function Search({ onSearchChange }: any) {
       value={search}
       onChange={handleChange}
       loadOptions={loadOptions}
-      className='w-96'
+      className="w-96"
     />
   );
 }
